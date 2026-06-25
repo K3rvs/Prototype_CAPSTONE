@@ -8,16 +8,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated from "react-native-reanimated";
 
-import LoginVerifyRoleSelection from "./app/index";
-import LoginChoice from "./app/LoginChoice";
-import LoginAuth from "./app/LoginAuth";
-import LoginVerifySchool from "./app/LoginVerifySchool";
-import LoginVerifyForm from "./app/LoginVerifyForm";
-import LoginVerifyPending from "./app/LoginVerifyPending";
-import LoginVerifySuccess from "./app/LoginVerifySuccess";
-import AdminDashboard from "./app/admin";
-import TeacherDashboard from "./app/teacher";
-import StudentDashboard from "./app/student";
+import LoginScreen from "./app/(tabs)/index";
+import RegisterRole from "./app/(tabs)/RegisterRole";
+import RegisterSchool from "./app/(tabs)/RegisterSchool";
+import RegisterDomain from "./app/(tabs)/RegisterDomain";
+import RegisterForm from "./app/(tabs)/RegisterForm";
+import RegisterSuccess from "./app/(tabs)/RegisterSuccess";
+import AdminDashboard from "./app/(tabs)/admin";
+import TeacherDashboard from "./app/(tabs)/teacher";
+import StudentDashboard from "./app/(tabs)/student";
+import { AuthProvider } from "./AuthContext";
 
 cssInterop(MaterialCommunityIcons, {
   className: {
@@ -31,28 +31,30 @@ cssInterop(MaterialCommunityIcons, {
 cssInterop(SafeAreaView, { className: "style" });
 cssInterop(Animated.View, { className: "style" });
 cssInterop(Animated.Text, { className: "style" });
-cssInterop(Animated.ScrollView, { className: "style" });
+cssInterop(Animated.ScrollView, {
+  className: "style",
+  contentContainerClassName: "contentContainerStyle"
+});
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="index">
-          <Stack.Screen name="index" component={LoginVerifyRoleSelection} />
-          <Stack.Screen name="LoginChoice" component={LoginChoice} />
-          <Stack.Screen name="LoginAuth" component={LoginAuth} />
-          <Stack.Screen name="LoginVerifySchool" component={LoginVerifySchool} />
-          <Stack.Screen name="LoginVerifyForm" component={LoginVerifyForm} />
-          <Stack.Screen name="LoginVerifyPending" component={LoginVerifyPending} />
-          <Stack.Screen name="LoginVerifySuccess" component={LoginVerifySuccess} />
+          <Stack.Screen name="index" component={LoginScreen} />
+          <Stack.Screen name="RegisterRole" component={RegisterRole} />
+          <Stack.Screen name="RegisterSchool" component={RegisterSchool} />
+          <Stack.Screen name="RegisterDomain" component={RegisterDomain} />
+          <Stack.Screen name="RegisterForm" component={RegisterForm} />
+          <Stack.Screen name="RegisterSuccess" component={RegisterSuccess} />
           <Stack.Screen name="admin" component={AdminDashboard} />
           <Stack.Screen name="teacher" component={TeacherDashboard} />
           <Stack.Screen name="student" component={StudentDashboard} />
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="auto" />
-    </>
+    </AuthProvider>
   );
 }

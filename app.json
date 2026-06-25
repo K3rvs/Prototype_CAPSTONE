@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "sample-app",
-    "slug": "sample-app",
+    "name": "i++App",
+    "slug": "i-plus-plus-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -35,7 +35,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-router"
     ],
     "experiments": {
       "reactCompiler": true
