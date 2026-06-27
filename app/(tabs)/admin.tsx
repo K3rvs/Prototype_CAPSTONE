@@ -19,7 +19,7 @@ import Animated, {
   useSharedValue,
   withTiming,
   withSpring,
-  useAnimatedScrollHandler
+  useAnimatedScrollHandler,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalModal } from "@/components/shared/AdminUI";
@@ -44,6 +44,12 @@ const TABS = [
   { id: "faq", label: "Help & FAQ", icon: "help-circle-outline" },
 ];
 
+/**
+ * AdminDashboard is the main layout and state manager for the Admin interface.
+ * It contains a persistent sidebar, an animated top header, and a main content area
+ * that switches between different admin sections (dashboard, users, calendar, etc.).
+ * It also handles global search and notifications overlays.
+ */
 export default function AdminDashboard() {
   const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -256,12 +262,19 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (isSidebarOpen) {
-      sidebarTranslateX.value = withSpring(0, { damping: 20, stiffness: 150, mass: 0.8 });
+      sidebarTranslateX.value = withSpring(0, {
+        damping: 20,
+        stiffness: 150,
+        mass: 0.8,
+      });
       backdropOpacity.value = withTiming(1, { duration: 300 });
       iconRotate.value = withSpring("15deg", { damping: 15, stiffness: 150 });
       iconScale.value = withSpring(0.9, { damping: 15, stiffness: 150 });
     } else {
-      sidebarTranslateX.value = withTiming(-400, { duration: 300, easing: Easing.inOut(Easing.ease) });
+      sidebarTranslateX.value = withTiming(-400, {
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+      });
       backdropOpacity.value = withTiming(0, { duration: 300 });
       iconRotate.value = withSpring("0deg", { damping: 15, stiffness: 150 });
       iconScale.value = withSpring(1, { damping: 15, stiffness: 150 });
@@ -270,7 +283,7 @@ export default function AdminDashboard() {
 
   const sidebarStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: sidebarTranslateX.value }],
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     bottom: 0,
     left: 0,
@@ -281,14 +294,14 @@ export default function AdminDashboard() {
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdropOpacity.value,
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     zIndex: 40,
     elevation: 40,
-    backgroundColor: 'rgba(15, 23, 42, 0.2)',
+    backgroundColor: "rgba(15, 23, 42, 0.2)",
   }));
 
   const iconStyle = useAnimatedStyle(() => ({
@@ -298,17 +311,37 @@ export default function AdminDashboard() {
   const renderSidebarContent = () => (
     <>
       <View className="flex-row items-center justify-between mb-4 pt-2 px-2">
-         <Text className="text-xs font-black text-slate-400 uppercase tracking-widest">Navigation</Text>
-         <Pressable onPress={() => setIsSidebarOpen(false)} className="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 xl:hidden">
-            <MaterialCommunityIcons name="close" size={20} color="#64748b" />
-         </Pressable>
+        <Text className="text-xs font-black text-slate-400 uppercase tracking-widest">
+          Navigation
+        </Text>
+        <Pressable
+          onPress={() => setIsSidebarOpen(false)}
+          className="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 xl:hidden"
+        >
+          <MaterialCommunityIcons name="close" size={20} color="#64748b" />
+        </Pressable>
       </View>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="gap-2">
           {TABS.map((tab) => (
-            <Pressable key={tab.id} onPress={() => { setActiveTab(tab.id); setIsSidebarOpen(false); }} className={`flex-row items-center rounded-xl p-2.5 gap-3 ${activeTab === tab.id ? "bg-indigo-50 border border-indigo-200/50 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
-               <MaterialCommunityIcons name={tab.icon as any} size={20} color={activeTab === tab.id ? "#4f46e5" : "#64748b"} />
-               <Text className={`font-bold text-sm ${activeTab === tab.id ? "text-indigo-900" : "text-slate-600"}`}>{tab.label}</Text>
+            <Pressable
+              key={tab.id}
+              onPress={() => {
+                setActiveTab(tab.id);
+                setIsSidebarOpen(false);
+              }}
+              className={`flex-row items-center rounded-xl p-2.5 gap-3 ${activeTab === tab.id ? "bg-indigo-50 border border-indigo-200/50 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}
+            >
+              <MaterialCommunityIcons
+                name={tab.icon as any}
+                size={20}
+                color={activeTab === tab.id ? "#4f46e5" : "#64748b"}
+              />
+              <Text
+                className={`font-bold text-sm ${activeTab === tab.id ? "text-indigo-900" : "text-slate-600"}`}
+              >
+                {tab.label}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -336,17 +369,21 @@ export default function AdminDashboard() {
           </Text>
         </View>
         {/* Navigation Content */}
-        <View className="flex-1 py-6 px-4">
-          {renderSidebarContent()}
-        </View>
+        <View className="flex-1 py-6 px-4">{renderSidebarContent()}</View>
       </View>
 
       {/* Main Content Area */}
       <View className="flex-1 relative z-10">
         {/* Animated Top Header */}
-        <Animated.View style={headerStyle} className="absolute top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-md border-b border-slate-200 flex-row items-center justify-between xl:justify-end px-4 sm:px-5 z-40 shadow-sm">
+        <Animated.View
+          style={headerStyle}
+          className="absolute top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-md border-b border-slate-200 flex-row items-center justify-between xl:justify-end px-4 sm:px-5 z-40 shadow-sm"
+        >
           {/* Mobile Logo */}
-          <Pressable onPress={() => setIsSidebarOpen(!isSidebarOpen)} className="flex-row items-center gap-3 xl:hidden active:opacity-70 transition-opacity cursor-pointer">
+          <Pressable
+            onPress={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="flex-row items-center gap-3 xl:hidden active:opacity-70 transition-opacity cursor-pointer"
+          >
             <Animated.View style={iconStyle}>
               <Image
                 source={require("@/assets/images/icon.png")}
@@ -359,81 +396,161 @@ export default function AdminDashboard() {
             </Text>
           </Pressable>
 
-        {/* Right Actions */}
-        <View className="flex-row items-center gap-1 sm:gap-3 relative">
-          {/* Search Action */}
-          <Pressable
-            onPress={() => setIsSearchPageOpen(true)}
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center"
-          >
-            <MaterialCommunityIcons
-              name="magnify"
-              size={22}
-              color="#0f172a"
-            />
-          </Pressable>
+          {/* Right Actions */}
+          <View className="flex-row items-center gap-1 sm:gap-3 relative">
+            {/* Search Action */}
+            <Pressable
+              onPress={() => setIsSearchPageOpen(true)}
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center"
+            >
+              <MaterialCommunityIcons
+                name="magnify"
+                size={22}
+                color="#0f172a"
+              />
+            </Pressable>
 
-          {/* Bell */}
-          <Pressable
-            onPress={() => setIsNotifPageOpen(true)}
-            className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center"
+            {/* Bell */}
+            <Pressable
+              onPress={() => setIsNotifPageOpen(true)}
+              className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center"
+            >
+              <MaterialCommunityIcons
+                name={unreadCount > 0 ? "bell" : "bell-outline"}
+                size={22}
+                color="#0f172a"
+              />
+              {unreadCount > 0 && (
+                <View className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] bg-red-600 rounded-full items-center justify-center border-2 border-white px-1 shadow-sm">
+                  <Text
+                    className="text-[10px] font-bold text-white text-center"
+                    style={{ lineHeight: 12 }}
+                  >
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                setPreviousTab(activeTab);
+                setActiveTab("profile");
+              }}
+              className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-700 rounded-full items-center justify-center ml-1 sm:ml-2 hover:opacity-90 active:scale-95 transition-all"
+            >
+              <Text className="font-bold text-white text-xs sm:text-sm">
+                AM
+              </Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+
+        {/* Main Content */}
+        <Animated.ScrollView
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          className="flex-1 px-4 sm:px-8 z-10"
+          contentContainerStyle={{ paddingTop: 76, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <Animated.View
+            entering={FadeInDown.duration(400)}
+            className="w-full max-w-7xl mx-auto"
           >
-            <MaterialCommunityIcons
-              name={unreadCount > 0 ? "bell" : "bell-outline"}
-              size={22}
-              color="#0f172a"
-            />
-            {unreadCount > 0 && (
-              <View className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] bg-red-600 rounded-full items-center justify-center border-2 border-white px-1 shadow-sm">
-                <Text
-                  className="text-[10px] font-bold text-white text-center"
-                  style={{ lineHeight: 12 }}
-                >
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </Text>
+            {activeTab === "dashboard" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <AdminDashboardSection setActiveTab={setActiveTab} />
               </View>
             )}
-          </Pressable>
-
-          <Pressable onPress={() => { setPreviousTab(activeTab); setActiveTab("profile"); }} className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-700 rounded-full items-center justify-center ml-1 sm:ml-2 hover:opacity-90 active:scale-95 transition-all">
-            <Text className="font-bold text-white text-xs sm:text-sm">AM</Text>
-          </Pressable>
-        </View>
-      </Animated.View>
-
-      {/* Main Content */}
-      <Animated.ScrollView
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        className="flex-1 px-4 sm:px-8 z-10"
-        contentContainerStyle={{ paddingTop: 76, paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View entering={FadeInDown.duration(400)} className="w-full max-w-7xl mx-auto">
-          {activeTab === "dashboard" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><AdminDashboardSection setActiveTab={setActiveTab} /></View>}
-          {activeTab === "users" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><AdminUsersSection /></View>}
-          {activeTab === "calendar" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><AdminCalendarSection /></View>}
-          {activeTab === "incident_response" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><AdminIncidentResponseSection /></View>}
-          {activeTab === "server_clusters" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><AdminServerClustersSection /></View>}
-          {activeTab === "ai_endpoints" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><AdminAIEndpointsSection /></View>}
-          {activeTab === "blockchain" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><AdminBlockchainNetworkSection /></View>}
-          {activeTab === "faq" && <View style={{ ...(Platform.OS === 'web' ? { zoom: 0.9 } : {}) } as any}><StudentHelpFAQ /></View>}
-          {activeTab === "profile" && <AdminProfileSection goBack={() => setActiveTab(previousTab)} />}
-        </Animated.View>
-      </Animated.ScrollView>
+            {activeTab === "users" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <AdminUsersSection />
+              </View>
+            )}
+            {activeTab === "calendar" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <AdminCalendarSection />
+              </View>
+            )}
+            {activeTab === "incident_response" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <AdminIncidentResponseSection />
+              </View>
+            )}
+            {activeTab === "server_clusters" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <AdminServerClustersSection />
+              </View>
+            )}
+            {activeTab === "ai_endpoints" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <AdminAIEndpointsSection />
+              </View>
+            )}
+            {activeTab === "blockchain" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <AdminBlockchainNetworkSection />
+              </View>
+            )}
+            {activeTab === "faq" && (
+              <View
+                style={
+                  { ...(Platform.OS === "web" ? { zoom: 0.9 } : {}) } as any
+                }
+              >
+                <StudentHelpFAQ />
+              </View>
+            )}
+            {activeTab === "profile" && (
+              <AdminProfileSection goBack={() => setActiveTab(previousTab)} />
+            )}
+          </Animated.View>
+        </Animated.ScrollView>
       </View>
 
       {/* Sidebar Overlay Drawer */}
-      {Platform.OS === 'web' ? (
+      {Platform.OS === "web" ? (
         <>
-          <View 
-            className={`absolute top-0 left-0 right-0 bottom-0 z-40 bg-slate-900/20 transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'} xl:hidden`}
+          <View
+            className={`absolute top-0 left-0 right-0 bottom-0 z-40 bg-slate-900/20 transition-opacity duration-300 ${isSidebarOpen ? "opacity-100" : "opacity-0"} xl:hidden`}
             pointerEvents={isSidebarOpen ? "auto" : "none"}
           >
-            <Pressable className="flex-1" onPress={() => setIsSidebarOpen(false)} />
+            <Pressable
+              className="flex-1"
+              onPress={() => setIsSidebarOpen(false)}
+            />
           </View>
-          <View 
-            className={`absolute top-0 bottom-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-md shadow-2xl border-r border-slate-200 flex-col py-6 px-4 transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} xl:hidden`}
+          <View
+            className={`absolute top-0 bottom-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-md shadow-2xl border-r border-slate-200 flex-col py-6 px-4 transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} xl:hidden`}
             pointerEvents={isSidebarOpen ? "auto" : "none"}
           >
             {renderSidebarContent()}
@@ -441,15 +558,18 @@ export default function AdminDashboard() {
         </>
       ) : (
         <>
-          <Animated.View 
-            style={backdropStyle} 
+          <Animated.View
+            style={backdropStyle}
             className="xl:hidden"
             pointerEvents={isSidebarOpen ? "auto" : "none"}
           >
-            <Pressable className="flex-1" onPress={() => setIsSidebarOpen(false)} />
+            <Pressable
+              className="flex-1"
+              onPress={() => setIsSidebarOpen(false)}
+            />
           </Animated.View>
-          <Animated.View 
-            style={sidebarStyle} 
+          <Animated.View
+            style={sidebarStyle}
             className="bg-white/95 backdrop-blur-md shadow-2xl border-r border-slate-200 flex-col py-6 px-4 xl:hidden"
             pointerEvents={isSidebarOpen ? "auto" : "none"}
           >
@@ -459,13 +579,17 @@ export default function AdminDashboard() {
       )}
 
       {/* --- Full Page Search Overlay --- */}
-      <Modal visible={isSearchPageOpen} animationType="fade" transparent={true} onRequestClose={() => setIsSearchPageOpen(false)}
+      <Modal
+        visible={isSearchPageOpen}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setIsSearchPageOpen(false)}
       >
-        <Pressable 
-          className="flex-1 bg-slate-900/40 justify-start items-center px-4 pt-16 sm:pt-24" 
+        <Pressable
+          className="flex-1 bg-slate-900/40 justify-start items-center px-4 pt-16 sm:pt-24"
           onPress={() => setIsSearchPageOpen(false)}
         >
-          <Pressable 
+          <Pressable
             className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex-col max-h-[70vh]"
             onPress={(e) => e.stopPropagation()}
           >
@@ -561,7 +685,8 @@ export default function AdminDashboard() {
                     No results found for &quot;{searchQuery}&quot;
                   </Text>
                   <Text className="text-slate-400 text-sm mt-2 text-center px-8">
-                    Try searching for different keywords or checking your spelling.
+                    Try searching for different keywords or checking your
+                    spelling.
                   </Text>
                 </View>
               )}
@@ -571,29 +696,44 @@ export default function AdminDashboard() {
       </Modal>
 
       {/* --- Full Page Notifications Overlay --- */}
-      <Modal visible={isNotifPageOpen} animationType="fade" transparent={true} onRequestClose={() => setIsNotifPageOpen(false)}>
-        <Pressable 
-          className="flex-1 bg-slate-900/40 sm:justify-start sm:items-end sm:pt-16 sm:pr-4 justify-end items-center" 
+      <Modal
+        visible={isNotifPageOpen}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setIsNotifPageOpen(false)}
+      >
+        <Pressable
+          className="flex-1 bg-slate-900/40 sm:justify-start sm:items-end sm:pt-16 sm:pr-4 justify-end items-center"
           onPress={() => setIsNotifPageOpen(false)}
         >
-          <Pressable 
+          <Pressable
             className="w-full sm:w-[400px] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex-col max-h-[80vh] sm:max-h-[70vh] sm:border border-slate-200"
             onPress={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <View className="h-16 border-b border-slate-200 flex-row items-center justify-between px-5 shadow-sm bg-white z-10 shrink-0">
-              <Text className="text-xl font-black text-slate-900 tracking-tight">Notifications</Text>
+              <Text className="text-xl font-black text-slate-900 tracking-tight">
+                Notifications
+              </Text>
               <View className="flex-row items-center gap-2">
                 {unreadCount > 0 && (
-                  <Pressable onPress={markAllAsRead} className="px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
-                    <Text className="text-slate-700 font-bold text-xs">Mark all read</Text>
+                  <Pressable
+                    onPress={markAllAsRead}
+                    className="px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"
+                  >
+                    <Text className="text-slate-700 font-bold text-xs">
+                      Mark all read
+                    </Text>
                   </Pressable>
                 )}
               </View>
             </View>
 
             {/* Notif List */}
-            <ScrollView className="flex-shrink bg-white" showsVerticalScrollIndicator={false}>
+            <ScrollView
+              className="flex-shrink bg-white"
+              showsVerticalScrollIndicator={false}
+            >
               {sortedNotifications.length > 0 ? (
                 <View className="pb-6">
                   {sortedNotifications.map((notif) => {
@@ -604,17 +744,30 @@ export default function AdminDashboard() {
                         onPress={() => markAsRead(notif.id)}
                         className={`px-4 sm:px-5 py-3 border-b border-slate-100 flex-row gap-3 hover:bg-slate-50 transition-colors ${!notif.read ? "bg-slate-50/50" : "bg-white"}`}
                       >
-                        <View className={`w-10 h-10 rounded-full items-center justify-center mt-0.5 shadow-sm shrink-0 ${colors.bg}`}>
-                          <MaterialCommunityIcons name={notif.icon as any} size={20} color={colors.hex} />
+                        <View
+                          className={`w-10 h-10 rounded-full items-center justify-center mt-0.5 shadow-sm shrink-0 ${colors.bg}`}
+                        >
+                          <MaterialCommunityIcons
+                            name={notif.icon as any}
+                            size={20}
+                            color={colors.hex}
+                          />
                         </View>
                         <View className="flex-1 justify-center">
-                          <Text className={`text-sm leading-tight mb-0.5 ${notif.read ? "text-slate-700 font-medium" : "text-slate-900 font-bold"}`}>
+                          <Text
+                            className={`text-sm leading-tight mb-0.5 ${notif.read ? "text-slate-700 font-medium" : "text-slate-900 font-bold"}`}
+                          >
                             {notif.title}
                           </Text>
-                          <Text className="text-slate-500 text-xs leading-relaxed mb-1" numberOfLines={2}>
+                          <Text
+                            className="text-slate-500 text-xs leading-relaxed mb-1"
+                            numberOfLines={2}
+                          >
                             {notif.desc}
                           </Text>
-                          <Text className={`text-[10px] font-bold uppercase tracking-wider ${notif.read ? "text-slate-400" : "text-blue-600"}`}>
+                          <Text
+                            className={`text-[10px] font-bold uppercase tracking-wider ${notif.read ? "text-slate-400" : "text-blue-600"}`}
+                          >
                             {notif.time}
                           </Text>
                         </View>
@@ -653,7 +806,6 @@ export default function AdminDashboard() {
           </Pressable>
         </Pressable>
       </Modal>
-
     </SafeAreaView>
   );
 }

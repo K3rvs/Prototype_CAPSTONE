@@ -33,22 +33,35 @@ cssInterop(Animated.View, { className: "style" });
 cssInterop(Animated.Text, { className: "style" });
 cssInterop(Animated.ScrollView, {
   className: "style",
-  contentContainerClassName: "contentContainerStyle"
+  contentContainerClassName: "contentContainerStyle",
 });
 
 const Stack = createNativeStackNavigator();
 
+/**
+ * Main Application Entry Point.
+ * 
+ * Sets up global routing, authentication context, and status bar behavior.
+ */
 export default function App() {
   return (
+    // Wrap the app in AuthProvider to make auth state available to all screens
     <AuthProvider>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="index">
+        {/* Main routing stack. Headers are hidden as screens manage their own top bars. */}
+        <Stack.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName="index"
+        >
+          {/* Authentication & Registration Flow */}
           <Stack.Screen name="index" component={LoginScreen} />
           <Stack.Screen name="RegisterRole" component={RegisterRole} />
           <Stack.Screen name="RegisterSchool" component={RegisterSchool} />
           <Stack.Screen name="RegisterDomain" component={RegisterDomain} />
           <Stack.Screen name="RegisterForm" component={RegisterForm} />
           <Stack.Screen name="RegisterSuccess" component={RegisterSuccess} />
+          
+          {/* Main Dashboard Screens based on User Role */}
           <Stack.Screen name="admin" component={AdminDashboard} />
           <Stack.Screen name="teacher" component={TeacherDashboard} />
           <Stack.Screen name="student" component={StudentDashboard} />
